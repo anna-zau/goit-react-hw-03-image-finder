@@ -19,6 +19,7 @@ export class App extends Component {
     loading: false,
     error: null,
     largeImageURL: null,
+    showBtn: false,
   };
 
   async componentDidUpdate(_, prevState) {
@@ -29,15 +30,15 @@ export class App extends Component {
         this.setState({
           loading: true,
         });
-        const images = await fetchImages(searchValue, page);
-
-        this.setState(prevState => ({
-          images: [...prevState.images, ...images],
-          loading: false,
-        }));
+        fetchImages(searchValue, page).then(data =>
+          this.setState(prevState => ({
+            images: [...prevState.images, ...data.data.hits],
+            showBtn: page < Math.ceil(data.data.total / 12),
+          }))
+        );
 
         // якщо немає результу пошуку ( массив = 0)
-        if (images.length === 0) {
+        if (this.state.images === 0) {
           toast.info(
             'Sorry, there are no results for your request. Please, enter something different.',
             {
@@ -89,7 +90,7 @@ export class App extends Component {
   };
 
   render() {
-    const { loading, images, error, largeImageURL } = this.state;
+    const { loading, images, error, largeImageURL, showBtn } = this.state;
 
     return (
       <AppClass>
@@ -104,7 +105,7 @@ export class App extends Component {
         {loading && <Loader />}
         {error && <h3>{error.message}</h3>}
 
-        {images.length > 0 && (
+        {showBtn && (
           <Button onBtnClick={this.onClickLoadMoreBtn} loading={loading} />
         )}
         {largeImageURL && (

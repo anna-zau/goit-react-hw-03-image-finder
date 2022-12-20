@@ -7,16 +7,5 @@ export const fetchImages = async (searchValue, page) => {
   const response = await axios.get(
     `?q=${searchValue}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
   );
-
-  const images = response.data.hits.map(image => {
-    const { id, tags, webformatURL, largeImageURL } = image;
-    return {
-      id,
-      tags,
-      webformatURL,
-      largeImageURL,
-    };
-  });
-  //   console.log(images);
-  return images;
+  return response;
 };
